@@ -33,3 +33,6 @@ class Manager:
    def drag_object(self, mouse_pos):
       if self.current_dragged_object:
          self.current_dragged_object.rect.center = mouse_pos
+   
+   def send_data(self, data): #! Hardcoded
+      self.objects[0].send_data(data)

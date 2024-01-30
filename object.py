@@ -50,15 +50,49 @@ class Object:
          # Draw the arrowhead as a polygon
          pygame.draw.polygon(surface, RED, arrowhead_points)
 
+         # Draw data
+         if self.sender_sock.connection.data:
+            progress =  1 - self.sender_sock.connection.counter / DATA_SEND_TIME
+            pos = sender_socket_pos + (receiver_socket_pos - sender_socket_pos )*progress
+            rect = pygame.Rect(pos.x, pos.y, 30, 30)
+            pygame.draw.rect(surface, BLACK , rect)
+
    def connect(self, other):
+      connection = Connection(other.reciever_sock)
       self.sender_sock.send_to = other
+      self.sender_sock.connection = connection
       other.reciever_sock.take_from = self
+
+   def update_connections(self):
+      if self.sender_sock.connection:
+         self.sender_sock.connection.move_data()
+
+   def send_data(self, data):
+      self.sender_sock.connection.send_data(data)
 
 class SenderSocket:
    def __init__(self):
       self.send_to = None
+      self.connection = None
 
 class RecivierSocket:
    def __init__(self):
       self.take_from = None
       self.data_current_data = None
+
+class Connection:
+   def __init__(self, send_to):
+      self.send_to = send_to
+      self.data = None
+      self.counter = 0
+   
+   def send_data(self, data):
+      self.data = data
+      self.counter = DATA_SEND_TIME
+
+   def move_data(self):
+      if self.counter <= 0:
+         self.send_to.data = self.data
+         self.data = None
+      else:
+         self.counter -= 1

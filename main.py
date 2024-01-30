@@ -9,6 +9,9 @@ running = True
 
 manager = Manager()
 
+# TODO render data on the rectangle
+# TODO objects forward data when they recieve them
+
 while running:
 
    for event in pygame.event.get():
@@ -38,9 +41,16 @@ while running:
          if event.button == 1:
             manager.release_draged_object()
 
+      if event.type == pygame.KEYDOWN:
+         if event.key == pygame.K_SPACE:
+            manager.send_data("123")
+
    screen.fill("white")
 
    # ! this part also needs refactor
+   for obj in manager.objects:
+      obj.update_connections()
+
    for obj in manager.objects:
       obj.draw(screen)
 
