@@ -9,8 +9,6 @@ running = True
 
 manager = Manager()
 
-# TODO render data on the rectangle
-# TODO objects forward data when they recieve them
 
 while running:
 
@@ -43,7 +41,7 @@ while running:
 
       if event.type == pygame.KEYDOWN:
          if event.key == pygame.K_SPACE:
-            manager.send_data("123")
+            manager.send_data("3")
 
    screen.fill("white")
 

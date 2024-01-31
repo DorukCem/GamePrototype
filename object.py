@@ -3,7 +3,7 @@ from settings import *
 
 class Object:
    def __init__(self, x, y):
-      self.function = None
+      self.function = lambda x : str(int(x) * int(x))
 
       self.color = (0, 0, 255)
       self.size = 60
@@ -57,6 +57,12 @@ class Object:
             rect = pygame.Rect(pos.x, pos.y, 30, 30)
             pygame.draw.rect(surface, BLACK , rect)
 
+            # Render text on the rectangle
+            font = pygame.font.Font(None, 24)  # Choose a font and size
+            text_surface = font.render(self.sender_sock.connection.data, True, WHITE)  # Render the text
+            text_rect = text_surface.get_rect(center=rect.center)  # Center the text on the rectangle
+            surface.blit(text_surface, text_rect)  # Draw the text surface onto the main surface
+
    def connect(self, other):
       connection = Connection(other.reciever_sock)
       self.sender_sock.send_to = other
@@ -66,9 +72,16 @@ class Object:
    def update_connections(self):
       if self.sender_sock.connection:
          self.sender_sock.connection.move_data()
+         self.move_data()
 
    def send_data(self, data):
       self.sender_sock.connection.send_data(data)
+
+   def move_data(self):
+      if self.reciever_sock.data:
+         modified_data = self.function(self.reciever_sock.data)
+         self.send_data(modified_data)
+         self.reciever_sock.data = None
 
 class SenderSocket:
    def __init__(self):
@@ -78,7 +91,7 @@ class SenderSocket:
 class RecivierSocket:
    def __init__(self):
       self.take_from = None
-      self.data_current_data = None
+      self.data = None
 
 class Connection:
    def __init__(self, send_to):
