@@ -3,7 +3,7 @@ from settings import *
 
 class Object:
    def __init__(self, x, y):
-      self.function = lambda x : str(int(x) * int(x))
+      self.function = None
 
       self.color = (0, 0, 255)
       self.size = 60
@@ -17,7 +17,27 @@ class Object:
    
    def __get_reciver_pos(self):
       return  self.rect.center - pygame.Vector2(20, 0)
-   
+
+   def connect(self, other):
+      connection = Connection(other.reciever_sock)
+      self.sender_sock.send_to = other
+      self.sender_sock.connection = connection
+      other.reciever_sock.take_from = self
+
+   def update_connections(self):
+      if self.sender_sock.connection:
+         self.sender_sock.connection.move_data()
+         self.move_data()
+
+   def send_data(self, data):
+      self.sender_sock.connection.send_data(data)
+
+   def move_data(self):
+      if self.reciever_sock.data:
+         modified_data = self.function(self.reciever_sock.data)
+         self.send_data(modified_data)
+         self.reciever_sock.data = None
+
    def draw(self, surface):
       pygame.draw.rect(surface, self.color, self.rect)
       # Calculate positions for the sockets
@@ -62,26 +82,6 @@ class Object:
             text_surface = font.render(self.sender_sock.connection.data, True, WHITE)  # Render the text
             text_rect = text_surface.get_rect(center=rect.center)  # Center the text on the rectangle
             surface.blit(text_surface, text_rect)  # Draw the text surface onto the main surface
-
-   def connect(self, other):
-      connection = Connection(other.reciever_sock)
-      self.sender_sock.send_to = other
-      self.sender_sock.connection = connection
-      other.reciever_sock.take_from = self
-
-   def update_connections(self):
-      if self.sender_sock.connection:
-         self.sender_sock.connection.move_data()
-         self.move_data()
-
-   def send_data(self, data):
-      self.sender_sock.connection.send_data(data)
-
-   def move_data(self):
-      if self.reciever_sock.data:
-         modified_data = self.function(self.reciever_sock.data)
-         self.send_data(modified_data)
-         self.reciever_sock.data = None
 
 class SenderSocket:
    def __init__(self):

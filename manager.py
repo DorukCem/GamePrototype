@@ -6,20 +6,22 @@ class Manager:
       self.current_dragged_object = None
       self.connection_selected_object = None
 
+      self.current_func = lambda x : str(int(x) * int(x))
+
    def place_object(self, mouse_pos):
       obj = Object(*(mouse_pos))
+      obj.function = self.current_func
       self.objects.append(obj)
 
-   @staticmethod
-   def connect_objects(obj1, obj2):
-      if obj1 is not obj2:
-         obj1.connect(obj2)
+   def connect_objects(self, obj):
+      if self.connection_selected_object is not obj:
+         self.connection_selected_object.connect(obj)
 
    def get_selected_object(self, mouse_pos): 
       for obj in self.objects:
          if obj.rect.collidepoint(mouse_pos):
             return obj
-      return None # ! <--
+      return None 
    
    def select_drag_object(self, object):
       self.current_dragged_object = object

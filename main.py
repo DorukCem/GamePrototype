@@ -9,7 +9,6 @@ running = True
 
 manager = Manager()
 
-
 while running:
 
    for event in pygame.event.get():
@@ -34,7 +33,7 @@ while running:
          if event.button == 3 and manager.connection_selected_object:
             other = manager.get_selected_object(mouse_pos)
             if other:
-               manager.connect_objects(manager.connection_selected_object, other) # ! this part is a little wierd
+               manager.connect_objects(other)
 
          if event.button == 1:
             manager.release_draged_object()
@@ -43,15 +42,20 @@ while running:
          if event.key == pygame.K_SPACE:
             manager.send_data("3")
 
+         if event.key == pygame.K_n:
+            manager.current_func = lambda x : str(-int(x))
+
+         if event.key == pygame.K_i:
+            manager.current_func = lambda x : str(int(x) + 1)
+
+         if event.key == pygame.K_s:
+            manager.current_func = lambda x : str(int(x) * int(x))
+
    screen.fill("white")
 
-   # ! this part also needs refactor
    for obj in manager.objects:
       obj.update_connections()
-
-   for obj in manager.objects:
       obj.draw(screen)
-
    for obj in manager.objects:
       obj.draw_connection(screen)
 
